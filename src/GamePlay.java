@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class GamePlay extends JPanel implements KeyListener, ActionListener {
+    private int trudnosc;
     private boolean play = false;
     private int score = 0;
 
@@ -23,14 +24,33 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
 
     private MapGenerator map;
 
-    public GamePlay(){
-        map = new MapGenerator(3,7);
-        addKeyListener(this);
-        setFocusable(true);
-        setFocusTraversalKeysEnabled(false);
-        timer = new Timer(delay, this);
-        timer.start();
-
+    public GamePlay(int trudnosc){
+        this.trudnosc = trudnosc;
+        if(trudnosc == 1){
+            map = new MapGenerator(3,7, this.trudnosc);
+            addKeyListener(this);
+            setFocusable(true);
+            setFocusTraversalKeysEnabled(false);
+            timer = new Timer(delay, this);
+            timer.start();
+        }
+        if(trudnosc == 2){
+            map = new MapGenerator(5,9, this.trudnosc);
+            addKeyListener(this);
+            setFocusable(true);
+            setFocusTraversalKeysEnabled(false);
+            timer = new Timer(delay, this);
+            timer.start();
+        }
+        if(trudnosc == 3){
+            ballposY = 400;
+            map = new MapGenerator(7,11, this.trudnosc);
+            addKeyListener(this);
+            setFocusable(true);
+            setFocusTraversalKeysEnabled(false);
+            timer = new Timer(delay, this);
+            timer.start();
+        }
     }
     public void paint(Graphics g){
         //background
@@ -182,7 +202,7 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
                 playerX = 310;
                 score = 0;
                 totalBricks = 21;
-                map = new MapGenerator(3, 7);
+                map = new MapGenerator(3, 7, this.trudnosc);
 
                 repaint();
             }
