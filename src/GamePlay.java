@@ -10,7 +10,7 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
     private boolean play = false;
     private int score = 0;
 
-    private int totalBricks = 21;
+    private int totalBricks;
 
     private Timer timer;
     private int delay = 2;
@@ -27,6 +27,7 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
     public GamePlay(int trudnosc){
         this.trudnosc = trudnosc;
         if(trudnosc == 1){
+            totalBricks = 21;
             map = new MapGenerator(3,7, this.trudnosc);
             addKeyListener(this);
             setFocusable(true);
@@ -35,6 +36,7 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
             timer.start();
         }
         if(trudnosc == 2){
+            totalBricks = 45;
             map = new MapGenerator(5,9, this.trudnosc);
             addKeyListener(this);
             setFocusable(true);
@@ -43,6 +45,7 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
             timer.start();
         }
         if(trudnosc == 3){
+            totalBricks = 77;
             ballposY = 400;
             map = new MapGenerator(7,11, this.trudnosc);
             addKeyListener(this);
