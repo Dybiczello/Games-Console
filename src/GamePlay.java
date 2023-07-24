@@ -1,11 +1,20 @@
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 
 public class GamePlay extends JPanel implements KeyListener, ActionListener {
+
+    private Clip clip = AudioSystem.getClip();
     private int trudnosc;
     private boolean play = false;
     private int score = 0;
@@ -24,7 +33,20 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
 
     private MapGenerator map;
 
-    public GamePlay(int trudnosc){
+    
+
+
+
+
+    public GamePlay(int trudnosc) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        try {
+            Clip clip = AudioSystem.getClip();
+            clip.open(AudioSystem.getAudioInputStream(new File("C:\\Users\\grama\\IdeaProjects\\walniecie.wav")));
+            this.clip = clip;
+            
+        } catch (Exception e) {
+            System.err.println("Wystąpił błąd: " + e.getMessage());
+        }
         this.trudnosc = trudnosc;
         if(trudnosc == 1){
             totalBricks = 21;
@@ -111,66 +133,69 @@ public class GamePlay extends JPanel implements KeyListener, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        timer.start();
-        if(play){
-            if(new Rectangle(ballposX, ballposY, 20, 20).intersects(new Rectangle(playerX, 550, 100, 8))){
-                ballYdir = -ballYdir;
-            }
-            A: for(int i=0; i<map.map.length; i++){
-                for(int j = 0; j<map.map[0].length; j++){
-                    if(map.map[i][j] > 0){
-                        int brickX = j* map.brickWidht + 80;
-                        int brickY = i* map.brickHeight + 50;
-                        int brickWidth = map.brickWidht;
-                        int brickHeight = map.brickHeight;
+            timer.start();
+            if(play){
+                if(new Rectangle(ballposX, ballposY, 20, 20).intersects(new Rectangle(playerX, 550, 100, 8))){
+                    ballYdir = -ballYdir;
+                }
+                A: for(int i=0; i<map.map.length; i++){
+                    for(int j = 0; j<map.map[0].length; j++){
+                        if(map.map[i][j] > 0){
+                            int brickX = j* map.brickWidht + 80;
+                            int brickY = i* map.brickHeight + 50;
+                            int brickWidth = map.brickWidht;
+                            int brickHeight = map.brickHeight;
 
-                        Rectangle rect = new Rectangle(brickX, brickY, brickWidth, brickHeight);
-                        Rectangle ballRect = new Rectangle(ballposX, ballposY, 20, 20);
-                        Rectangle brickRect = rect;
+                            Rectangle rect = new Rectangle(brickX, brickY, brickWidth, brickHeight);
+                            Rectangle ballRect = new Rectangle(ballposX, ballposY, 20, 20);
+                            Rectangle brickRect = rect;
 
-                        if(ballRect.intersects(brickRect)){
-                            if(map.map[i][j] == 1) {
-                                map.setBrickValue(0, i, j);
-                                totalBricks--;
-                                score += 5;
-                            }
-                            else if(map.map[i][j] == 2){
-                                map.setBrickValue(1,i,j);
-                                score += 5;
-                            }
-                            else if(map.map[i][j] == 3){
-                                map.setBrickValue(2, i, j);
-                                score += 5;
-                            }
+                            if(ballRect.intersects(brickRect)){
+                                clip.setFramePosition(0);
+                                clip.start();
+                                if(map.map[i][j] == 1) {
+                                    map.setBrickValue(0, i, j);
+                                    totalBricks--;
+                                    score += 5;
+                                }
+                                else if(map.map[i][j] == 2){
+                                    map.setBrickValue(1,i,j);
+                                    score += 5;
+                                }
+                                else if(map.map[i][j] == 3){
+                                    map.setBrickValue(2, i, j);
+                                    score += 5;
+                                }
 
-                            if(ballposX + 19 <= brickRect.x || ballposX +1 >= brickRect.x + brickRect.width){
-                                ballXdir = -ballXdir;
+                                if(ballposX + 19 <= brickRect.x || ballposX +1 >= brickRect.x + brickRect.width){
+                                    ballXdir = -ballXdir;
+                                }
+                                else{
+                                    ballYdir = -ballYdir;
+                                }
+                                break A;
                             }
-                            else{
-                                ballYdir = -ballYdir;
-                            }
-                            break A;
                         }
                     }
                 }
+
+                ballposX += ballXdir;
+                ballposY += ballYdir;
+                if(ballposX < 0){
+                    ballXdir = -ballXdir;
+                }
+
+                if(ballposY < 0){
+                    ballYdir = -ballYdir;
+                }
+                if(ballposX > 670){
+                    ballXdir = -ballXdir;
+                }
+
             }
 
-            ballposX += ballXdir;
-            ballposY += ballYdir;
-            if(ballposX < 0){
-                ballXdir = -ballXdir;
-            }
+            repaint();
 
-            if(ballposY < 0){
-                ballYdir = -ballYdir;
-            }
-            if(ballposX > 670){
-                ballXdir = -ballXdir;
-            }
-
-        }
-
-        repaint();
     }
     @Override
     public void keyReleased(KeyEvent e) {}

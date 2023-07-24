@@ -1,5 +1,8 @@
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class Main {
     public static void openFrame(JFrame frame) {
@@ -33,7 +36,12 @@ public class Main {
             closeFrame(mainMenuFrame);
 
             JFrame obj = new JFrame();
-            GamePlay gamePlay = new GamePlay(2);
+            GamePlay gamePlay = null;
+            try {
+                gamePlay = new GamePlay(2);
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                throw new RuntimeException(ex);
+            }
             obj.setBounds(10,10,710,600);
             obj.setTitle("Brick Breaker");
             obj.setResizable(false);
